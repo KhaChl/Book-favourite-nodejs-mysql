@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users(
 
 CREATE TABLE IF NOT EXISTS books(
     id int(20) auto_increment not null,
-    user_id int(20),
+    user_id int(20) not null,
     title varchar(20) not null,
     url varchar(255) not null,
     description text,

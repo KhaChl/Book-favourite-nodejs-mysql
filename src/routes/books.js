@@ -4,7 +4,7 @@ const route = express.Router();
 const db = require('../database');
 
 route.get('/', async (req,res)=>{
-    const books = await db.query('SELECT * FROM books');
+    const books = await db.query('SELECT * FROM books').catch((error)=>console.log(error));
     res.render('books/list', {books})
 });
 
@@ -19,21 +19,21 @@ route.post('/add', async (req, res)=>{
         url,
         description
     };
-    await db.query('INSERT INTO books set ?', [newBook]);
+    await db.query('INSERT INTO books set ?', [newBook]).catch((error)=>console.log(error));
     req.flash('success', 'Book saved successfully');
     res.redirect('/books');
 });
 
 route.get('/delete/:id', async (req,res)=>{
     const {id} = req.params;
-    await db.query('DELETE FROM books WHERE id = ?', [id]);
+    await db.query('DELETE FROM books WHERE id = ?', [id]).catch((error)=>console.log(error));
     req.flash('success', 'Book removed successfully');
     res.redirect('/books');
 });
 
 route.get('/edit/:id', async (req,res)=>{
     const {id} = req.params;
-    const books = await db.query('SELECT * FROM books WHERE id = ?',[id]);
+    const books = await db.query('SELECT * FROM books WHERE id = ?',[id]).catch((error)=>console.log(error));
     res.render('books/edit', {book:books[0]});
 });
 
@@ -45,7 +45,7 @@ route.post('/edit/:id', async (req,res)=>{
         url,
         description
     };
-    await db.query('UPDATE books SET ? WHERE id = ?',[newBook,id]);
+    await db.query('UPDATE books SET ? WHERE id = ?',[newBook,id]).catch((error)=>console.log(error));
     req.flash('success', 'Book edited successfully');
     res.redirect('/books');
 });

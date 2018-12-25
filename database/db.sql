@@ -18,7 +18,6 @@ CREATE TABLE IF NOT EXISTS books(
     url varchar(255) not null,
     description text,
     created_at timestamp not null DEFAULT current_timestamp,
-    updated_at timestamp not null DEFAULT current_timestamp,
     CONSTRAINT pk_users PRIMARY KEY(id),
     CONSTRAINT fk_books_users FOREIGN KEY (user_id) REFERENCES users(id)
 )ENGINE=InnoDb;

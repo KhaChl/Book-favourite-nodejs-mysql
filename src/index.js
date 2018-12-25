@@ -37,6 +37,7 @@ app.use(express.json());
 // Global variables
 app.use((req,res,next)=>{
     app.locals.success = req.flash('success');
+    app.locals.error = req.flash('error');
     next();
 });
 

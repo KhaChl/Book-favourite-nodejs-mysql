@@ -1,28 +1,29 @@
 const express = require('express');
 const route = express.Router();
-
 const db = require('../database');
+const { isLoggedIn } = require('../lib/auth');
 
-route.get('/', async (req,res)=>{
+route.get('/', isLoggedIn, async (req, res) => {
     try {
-        const books = await db.query('SELECT * FROM books');
-        res.render('books/list', {books});
+        const books = await db.query('SELECT * FROM books WHERE user_id = ?', [req.user.id]);
+        res.render('books/list', { books });
 
     } catch (error) {
         console.log(error);
     }
 });
 
-route.get('/add', (req, res)=>{
+route.get('/add', isLoggedIn, (req, res) => {
     res.render('books/add');
 });
 
-route.post('/add', async (req, res)=>{
+route.post('/add', async (req, res) => {
     const { title, url, description } = req.body;
     const newBook = {
         title,
         url,
-        description
+        description,
+        user_id : req.user.id
     };
 
     try {
@@ -34,31 +35,27 @@ route.post('/add', async (req, res)=>{
     res.redirect('/books');
 });
 
-route.get('/delete/:id', async (req,res)=>{
-    const {id} = req.params;
-    
+route.get('/delete/:id', isLoggedIn, async (req, res) => {
+    const { id } = req.params;
+
     try {
         await db.query('DELETE FROM books WHERE id = ?', [id]);
-        req.flash('success', 'Book removed successfully');   
+        req.flash('success', 'Book removed successfully');
     } catch (error) {
         req.flash('error', 'Error removed book');
     }
     res.redirect('/books');
 });
 
-route.get('/edit/:id', async (req,res)=>{
-    const {id} = req.params;
+route.get('/edit/:id', isLoggedIn, async (req, res) => {
+    const { id } = req.params;
 
-    try {
-        const books = await db.query('SELECT * FROM books WHERE id = ?',[id]);
-        res.render('books/edit', {book:books[0]});
-    } catch (error) {
-        res.redirect('/books');
-    }
+    const books = await db.query('SELECT * FROM books WHERE id = ?', [id]);
+    res.render('books/edit', { book: books[0] });
 });
 
-route.post('/edit/:id', async (req,res)=>{
-    const {id} = req.params;
+route.post('/edit/:id', async (req, res) => {
+    const { id } = req.params;
     const { title, url, description } = req.body;
     const newBook = {
         title,
@@ -67,7 +64,7 @@ route.post('/edit/:id', async (req,res)=>{
     };
 
     try {
-        await db.query('UPDATE books SET ? WHERE id = ?',[newBook,id]);
+        await db.query('UPDATE books SET ? WHERE id = ?', [newBook, id]);
         req.flash('success', 'Book edited successfully');
     } catch (error) {
         req.flash('error', 'Error edit');

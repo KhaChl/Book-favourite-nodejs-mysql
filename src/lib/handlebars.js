@@ -1,4 +1,4 @@
-const {format} = require('timeago.js');
+const { format } = require('timeago.js');
 
 const helpers = {};
 

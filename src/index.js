@@ -7,6 +7,7 @@ const session = require('express-session');
 const mysqlStore = require('express-mysql-session');
 const { database } = require('./keys');
 const passport = require('passport');
+const validator = require('express-validator');
 
 // Initialization
 const app = express();
@@ -37,6 +38,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(validator());
 
 // Global variables
 app.use((req, res, next) => {

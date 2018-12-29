@@ -26,11 +26,21 @@ route.post('/register', (req, res) => {
     req.checkBody('surname', 'Surname only letters').matches(/^[a-zA-Z]+$/, "i");
     req.checkBody('password', 'Password use 5 or more characters').matches(/^[a-zA-Z0-9]{5,100}$/, "i");
     req.checkBody('password', 'Passwords do not match').equals(confirmpassword);
-    passport.authenticate('local.register', {
-        successRedirect: '/profile',
-        failureRedirect: '/register',
-        failureFlash: true
-    })(req, res);
+    const errors = req.validationErrors();
+    if (errors) {
+        res.render('auth/register', {
+            errors: errors,
+            username,
+            name,
+            surname,
+        });
+    } else {
+        passport.authenticate('local.register', {
+            successRedirect: '/profile',
+            failureRedirect: '/register',
+            failureFlash: true
+        })(req, res);
+    }
 });
 
 route.get('/profile', isLoggedIn, (req, res) => {
